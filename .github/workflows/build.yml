@@ -1,34 +1,39 @@
-name: Build Flutter APK
+name: Générer une APK Flutter
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main", "master" ]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Set up Java JDK
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Java JDK
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Set up Flutter
+      - name: Installer Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
 
-      - name: Install dependencies
+      - name: Générer le dossier Android officiel
+        run: flutter create . --platforms=android
+
+      - name: Installer les dépendances
         run: flutter pub get
 
       - name: Build APK
         run: flutter build apk --release
 
-      - name: Upload APK
+      - name: Téléverser l'APK
         uses: actions/upload-artifact@v4
         with:
           name: IscoWallet-APK
